@@ -93,6 +93,7 @@ def get_pattern_graph(pw_rel_dfs):
 def get_pattern_graph2(pw_rel_dfs, no_node_labels=False):
     g = nx.DiGraph()
     true_heads = set(pw_rel_dfs['ruleHTrue_1']['HEAD'])
+    g.graph['rankdir'] = 'LR'
     if len(true_heads) > 0:
         print("Success Pattern:")
     else:
