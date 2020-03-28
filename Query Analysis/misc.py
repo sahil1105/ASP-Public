@@ -90,7 +90,7 @@ def get_pattern_graph(pw_rel_dfs):
     
     return g
 
-def get_pattern_graph2(pw_rel_dfs, no_node_labels=False):
+def get_pattern_graph2(pw_rel_dfs, no_node_labels=False, chain_eq_node_labels=True):
     g = nx.DiGraph()
     true_heads = set(pw_rel_dfs['ruleHTrue_1']['HEAD'])
     g.graph['rankdir'] = 'LR'
@@ -104,17 +104,29 @@ def get_pattern_graph2(pw_rel_dfs, no_node_labels=False):
             if (row['NODE1'], row['NODE2']) in g.edges:
                 g.edges[(row['NODE1'], row['NODE2'])]['label'] += ';{}{}'.format('e', row['OCC'])
             else:
-                g.add_edge(row['NODE1'], row['NODE2'], color='darkgreen', label='{}{}'.format('e', row['OCC']))
+                g.add_edge(row['NODE1'], row['NODE2'], color='darkgreen', label='{}{}'.format('e', row['OCC']),
+                           fontname = "helvetica")
     if 'ne_3' in pw_rel_dfs:
         for _, row in pw_rel_dfs['ne_3'].iterrows():
             if (row['NODE1'], row['NODE2']) in g.edges:
                 g.edges[(row['NODE1'], row['NODE2'])]['label'] += ';{}{}'.format('e', row['OCC'])
             else:
-                g.add_edge(row['NODE1'], row['NODE2'], color='red', style='dotted', label='{}{}'.format('e', row['OCC']))
+                g.add_edge(row['NODE1'], row['NODE2'], color='red', style='dotted', label='{}{}'.format('e', row['OCC']),
+                           fontname = "helvetica")
     
-    if no_node_labels:
-        for n in g.nodes:
+    
+    for n in g.nodes:
+        if no_node_labels:
             g.nodes[n]['label'] = '  '
+        g.nodes[n]['fontname'] = "helvetica"
+        g.nodes[n]['style'] = "rounded"
+        g.nodes[n]['shape'] = "box"
+        if chain_eq_node_labels:
+            eq_grps = eq_groups(pw_rel_dfs, single_grps=False)
+            eq_grps = [set([s for s in eq_grp]) for eq_grp in eq_grps]
+            for eq_grp in eq_grps:
+                if n in eq_grp:
+                    g.nodes[n]['label'] = '='.join(map(remove_double_quotes, sorted(list(eq_grp))))
     
     return g
 
