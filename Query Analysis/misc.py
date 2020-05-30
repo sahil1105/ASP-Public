@@ -130,6 +130,54 @@ def get_pattern_graph2(pw_rel_dfs, no_node_labels=False, chain_eq_node_labels=Tr
     
     return g
 
+def get_pattern_graph3(pw_rel_dfs, pw_obj, no_node_labels=False, chain_eq_node_labels=True):
+    g = nx.DiGraph()
+    true_heads = set(pw_rel_dfs['ruleHTrue_1']['HEAD'])
+    g.graph['rankdir'] = 'LR'
+#     if len(true_heads) > 0:
+#         print("Success Pattern:")
+#     else:
+#         print("Failure Pattern:")
+    
+    if 'e_3' in pw_rel_dfs:
+        for _, row in pw_rel_dfs['e_3'].iterrows():
+            if (row['NODE1'], row['NODE2']) in g.edges:
+                g.edges[(row['NODE1'], row['NODE2'])]['label'] += ';{}{}'.format('e', row['OCC'])
+            else:
+                g.add_edge(row['NODE1'], row['NODE2'], color='darkgreen', label='{}{}'.format('e', row['OCC']),
+                           fontname = "helvetica")
+    if 'ne_3' in pw_rel_dfs:
+        for _, row in pw_rel_dfs['ne_3'].iterrows():
+            if (row['NODE1'], row['NODE2']) in g.edges:
+                g.edges[(row['NODE1'], row['NODE2'])]['label'] += ';{}{}'.format('e', row['OCC'])
+            else:
+                g.add_edge(row['NODE1'], row['NODE2'], color='red', style='dotted', label='{}{}'.format('e', row['OCC']),
+                           fontname = "helvetica")
+    
+    for n in g.nodes:
+        if no_node_labels:
+            g.nodes[n]['label'] = '  '
+        g.nodes[n]['fontname'] = "helvetica"
+        g.nodes[n]['style'] = "rounded"
+        g.nodes[n]['shape'] = "box"
+        if chain_eq_node_labels:
+            eq_grps = eq_groups(pw_rel_dfs, single_grps=False)
+            eq_grps = [set([s for s in eq_grp]) for eq_grp in eq_grps]
+            for eq_grp in eq_grps:
+                if n in eq_grp:
+                    g.nodes[n]['label'] = '='.join(map(remove_double_quotes, sorted(list(eq_grp))))
+    
+    heads, true_heads = get_query_heads_dict(pw_obj)
+    for head, head_desc in heads.items():
+        g.add_node(head, color='skyblue', shape='oval', fontname='helvetica', style='"filled,rounded"', fillcolor='skyblue')
+        for pos, var in head_desc.items():
+            if (head, var) in g.edges:
+                g.edges[(head,var)]['label'] += f';{str(pos)}'
+            else:
+                g.add_edge(head, var, label=str(pos), color='blue', style='dotted', constraint='false')
+    
+    return g
+
 def get_incidence_graph(pw_rel_dfs):
     
     g = nx.MultiDiGraph()
@@ -302,12 +350,17 @@ def print_fancy_rewrite(pw_rel_dfs):
     
     display(html_print(cstr('{} :- {}. % {}'.format(heads_htmls_combined, rules_htmls_combined, eqls_combined))))
     
-def get_query_head_facts(pw_obj, idx=None):
+
+def get_query_heads_dict(pw_obj):
     heads = {h: {} for h in set([t[0] for t in pw_obj.rls['ruleH_1']])}
     true_heads = set([t[0] for t in pw_obj.rls['ruleHTrue_1']])
     for row in pw_obj.rls['newHArc_3']:
         pos, h, var = int(row[1]), row[2], row[0]
         heads[h][pos] = var
+    return heads, true_heads
+    
+def get_query_head_facts(pw_obj, idx=None):
+    heads, true_heads = get_query_heads_dict(pw_obj)
     head_strs = []
     for h in sorted(heads.keys()):
         variables = [(heads[h][k]) for k in sorted(heads[h].keys())]
@@ -315,6 +368,27 @@ def get_query_head_facts(pw_obj, idx=None):
         h_str = '{}{}{}({}).'.format('' if is_true else 'n', head_to_node(h), '' if idx is None else str(idx), ','.join(variables))
         head_strs.append(h_str)
     return head_strs
+
+def get_edge_facts(pw, edge_rel_idx: int=None):
+    pw_objs = [pw]
+    _,_,pw_objs = rel_slicer(None, None, pw_objs, rels_to_use=['e_2', 'ne_2'])
+    if edge_rel_idx is not None:
+        _, pw_objs, _ = rel_name_remapper(None, pw_objs, None, rel_name_map={'e_2': 'e{}_2'.format(str(edge_rel_idx)),
+                                                                             'ne_2': 'ne{}_2'.format(str(edge_rel_idx))})
+    return PWEExport.export_as_asp_facts(pw_objs, include_pw_ids=False)
+
+def are_equivalent_patterns(pw1, pw2, eq_check_encoding):
+    pw1_edge_facts = get_edge_facts(pw1, 1)
+    pw2_edge_facts = get_edge_facts(pw2, 2)
+    pw1_head_facts = get_query_head_facts(pw1, idx=1)
+    pw2_head_facts = get_query_head_facts(pw2, idx=2)
+    # print(pw1_edge_facts, pw2_edge_facts, pw1_head_facts, pw2_head_facts)
+    asp_out, _ = run_clingo(eq_check_encoding.split('\n')+pw1_edge_facts+pw2_edge_facts+pw1_head_facts+pw2_head_facts, num_solutions=1)
+    # print(asp_out)
+    _,_,eq_check_pws = load_worlds(asp_out, silent=True)
+    
+    return len(eq_check_pws) >= 1
+
 
 def get_equivalent_sets(objs, match_func):
     
