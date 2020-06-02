@@ -1,0 +1,23 @@
+digraph G {
+	graph [bb="0,0,225,100",
+		label="thop(X,X) :- e(X,X), e(X,X), e(X,X).",
+		labelloc=t,
+		lheight=0.21,
+		lp="112.5,88.5",
+		lwidth=2.90,
+		rankdir=LR
+	];
+	node [label="\N"];
+	X	 [color=blue,
+		fontname="Helvetica-Narrow",
+		height=0.61111,
+		pos="112.5,22",
+		shape=doubleoctagon,
+		style=rounded,
+		width=0.86111];
+	X -> X	 [color=darkgreen,
+		fontname=helvetica,
+		label="e1;e2;e3",
+		lp="112.5,69.5",
+		pos="e,123.99,44.212 101.01,44.212 100.07,53.795 103.9,62 112.5,62 117.74,62 121.21,58.953 122.9,54.405"];
+}

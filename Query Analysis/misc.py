@@ -90,14 +90,16 @@ def get_pattern_graph(pw_rel_dfs):
     
     return g
 
-def get_pattern_graph2(pw_rel_dfs, no_node_labels=False, chain_eq_node_labels=True):
+def get_pattern_graph2(pw_rel_dfs, no_node_labels=False, chain_eq_node_labels=True, silent=False):
     g = nx.DiGraph()
     true_heads = set(pw_rel_dfs['ruleHTrue_1']['HEAD'])
     g.graph['rankdir'] = 'LR'
-    if len(true_heads) > 0:
-        print("Success Pattern:")
-    else:
-        print("Failure Pattern:")
+    
+    if not silent:
+        if len(true_heads) > 0:
+            print("Success Pattern:")
+        else:
+            print("Failure Pattern:")
     
     if 'e_3' in pw_rel_dfs:
         for _, row in pw_rel_dfs['e_3'].iterrows():
@@ -130,14 +132,19 @@ def get_pattern_graph2(pw_rel_dfs, no_node_labels=False, chain_eq_node_labels=Tr
     
     return g
 
-def get_pattern_graph3(pw_rel_dfs, pw_obj, no_node_labels=False, chain_eq_node_labels=True):
+def get_pattern_graph3(pw_rel_dfs, pw_obj, no_node_labels=False, chain_eq_node_labels=True, silent=False, q_head='none', q_head_color='blue'):
+    """
+    q_head options: none, hyperedge, binary-edge, binary-node-highlight
+    """
     g = nx.DiGraph()
     true_heads = set(pw_rel_dfs['ruleHTrue_1']['HEAD'])
     g.graph['rankdir'] = 'LR'
-#     if len(true_heads) > 0:
-#         print("Success Pattern:")
-#     else:
-#         print("Failure Pattern:")
+    
+    if not silent:
+        if len(true_heads) > 0:
+            print("Success Pattern:")
+        else:
+            print("Failure Pattern:")
     
     if 'e_3' in pw_rel_dfs:
         for _, row in pw_rel_dfs['e_3'].iterrows():
@@ -157,7 +164,7 @@ def get_pattern_graph3(pw_rel_dfs, pw_obj, no_node_labels=False, chain_eq_node_l
     for n in g.nodes:
         if no_node_labels:
             g.nodes[n]['label'] = '  '
-        g.nodes[n]['fontname'] = "helvetica"
+        g.nodes[n]['fontname'] = "Helvetica-Narrow"
         g.nodes[n]['style'] = "rounded"
         g.nodes[n]['shape'] = "box"
         if chain_eq_node_labels:
@@ -167,14 +174,39 @@ def get_pattern_graph3(pw_rel_dfs, pw_obj, no_node_labels=False, chain_eq_node_l
                 if n in eq_grp:
                     g.nodes[n]['label'] = '='.join(map(remove_double_quotes, sorted(list(eq_grp))))
     
-    heads, true_heads = get_query_heads_dict(pw_obj)
-    for head, head_desc in heads.items():
-        g.add_node(head, color='skyblue', shape='oval', fontname='helvetica', style='"filled,rounded"', fillcolor='skyblue')
-        for pos, var in head_desc.items():
-            if (head, var) in g.edges:
-                g.edges[(head,var)]['label'] += f';{str(pos)}'
+    if q_head == 'hyperedge':
+        heads, true_heads = get_query_heads_dict(pw_obj)
+        for head, head_desc in heads.items():
+            g.add_node(head, color='skyblue', shape='oval', fontname='helvetica', style='"filled,rounded"', fillcolor='skyblue')
+            for pos, var in head_desc.items():
+                if (head, var) in g.edges:
+                    g.edges[(head,var)]['label'] += f';{str(pos)}'
+                else:
+                    g.add_edge(head, var, label=str(pos), color=q_head_color, style='dotted', constraint='false')
+    elif q_head == 'none':
+        pass
+    elif q_head == 'binary-edge':
+        heads, true_heads = get_query_heads_dict(pw_obj)
+        for head, head_desc in heads.items():
+            assert len(head_desc.items()) == 2
+            [var1, var2] = [head_desc[pos] for pos in sorted(head_desc.keys())]
+            g.add_edge(var1, var2, label=str(head), color=q_head_color, style='dotted', constraint='false')
+    elif q_head == 'binary-node-highlight':
+        heads, true_heads = get_query_heads_dict(pw_obj)
+        for head, head_desc in heads.items():
+            assert len(head_desc.items()) == 2
+            [var1, var2] = [head_desc[pos] for pos in sorted(head_desc.keys())]
+            if var1 == var2:
+                g.nodes[var1]['shape'] = 'doubleoctagon'
+                g.nodes[var1]['style'] = "rounded"
+                g.nodes[var1]['color'] = q_head_color
             else:
-                g.add_edge(head, var, label=str(pos), color='blue', style='dotted', constraint='false')
+                g.nodes[var1]['shape'] = 'doublecircle'
+                g.nodes[var1]['style'] = "solid"
+                g.nodes[var1]['color'] = 'blue'
+                g.nodes[var2]['shape'] = 'doubleoctagon'
+                g.nodes[var2]['style'] = "solid"
+                g.nodes[var2]['color'] = q_head_color
     
     return g
 
@@ -242,10 +274,10 @@ def neq_rules(pw_rel_dfs):
     neqls = []
     for _, row in pw_rel_dfs['neqOrd_3'].iterrows():
         neq_str = '{} != {}'.format(remove_double_quotes(row['VAR1']), remove_double_quotes(row['VAR2']))
-        neqls.append(cstr(neq_str))
+        neqls.append(neq_str)
     return neqls
 
-def get_query_heads(ruleH_dfs, ruleHTrue_dfs, hArc_df, colored=True):
+def get_query_heads(ruleH_dfs, ruleHTrue_dfs, hArc_df, colored=True, html=True):
     
     heads = {h: {} for h in set(ruleH_dfs['HEAD'])}
     true_heads = set(ruleHTrue_dfs['HEAD'])
@@ -259,21 +291,24 @@ def get_query_heads(ruleH_dfs, ruleHTrue_dfs, hArc_df, colored=True):
         variables = [remove_double_quotes(heads[h][k]) for k in sorted(heads[h].keys())]
         is_true = h in true_heads
         h_str = '{}{}({})'.format('' if is_true else 'n', head_to_node(h), ','.join(variables))
-        if colored:
-            heads_htmls.append(cstr(h_str, 'green' if is_true else 'red'))
+        if html:
+            if colored:
+                heads_htmls.append(cstr(h_str, 'green' if is_true else 'red'))
+            else:
+                heads_htmls.append(cstr(h_str))
         else:
-            heads_htmls.append(cstr(h_str))
+            heads_htmls.append(h_str)
     return heads_htmls
 
-def get_original_query_heads(pw_rel_dfs, colored=True):
+def get_original_query_heads(pw_rel_dfs, colored=True, html=True):
     
-    return get_query_heads(pw_rel_dfs['ruleH_1'], pw_rel_dfs['ruleHTrue_1'], pw_rel_dfs['hArc_3'], colored)
+    return get_query_heads(pw_rel_dfs['ruleH_1'], pw_rel_dfs['ruleHTrue_1'], pw_rel_dfs['hArc_3'], colored, html)
 
-def get_substituted_query_heads(pw_rel_dfs, colored=True):
+def get_substituted_query_heads(pw_rel_dfs, colored=True, html=True):
     
-    return get_query_heads(pw_rel_dfs['ruleH_1'], pw_rel_dfs['ruleHTrue_1'], pw_rel_dfs['newHArc_3'], colored)
+    return get_query_heads(pw_rel_dfs['ruleH_1'], pw_rel_dfs['ruleHTrue_1'], pw_rel_dfs['newHArc_3'], colored, html)
 
-def get_query_body_rules(ruleOcc_df, ruleOccTrue_df, arc_df, colored=True):
+def get_query_body_rules(ruleOcc_df, ruleOccTrue_df, arc_df, colored=True, html=True):
     
     rules = {}
     for _, p in ruleOcc_df[['ATOM', 'OCC']].iterrows():
@@ -294,61 +329,95 @@ def get_query_body_rules(ruleOcc_df, ruleOccTrue_df, arc_df, colored=True):
         variables = [remove_double_quotes(rules[(r,occ)][k]) for k in sorted(rules[(r,occ)].keys())]
         is_true = (r,occ) in true_rules
         r_str = '{}{}({})'.format('' if is_true else 'not ', head_to_node(r), ','.join(variables))
-        if colored:
-            rules_htmls.append(cstr(r_str, 'green' if is_true else 'red'))
+        if html:
+            if colored:
+                rules_htmls.append(cstr(r_str, 'green' if is_true else 'red'))
+            else:
+                rules_htmls.append(cstr(r_str))
         else:
-            rules_htmls.append(cstr(r_str))
+            rules_htmls.append(r_str)
     
     return rules_htmls
 
-def get_original_query_body_rules(pw_rel_dfs, colored=True):
+def get_original_query_body_rules(pw_rel_dfs, colored=True, html=True):
     
-    return get_query_body_rules(pw_rel_dfs['ruleOcc_2'], pw_rel_dfs['ruleOccTrue_2'], pw_rel_dfs['arc_4'], colored)
+    return get_query_body_rules(pw_rel_dfs['ruleOcc_2'], pw_rel_dfs['ruleOccTrue_2'], pw_rel_dfs['arc_4'], colored, html)
 
-def get_substituted_query_body_rules(pw_rel_dfs, colored=True):
+def get_substituted_query_body_rules(pw_rel_dfs, colored=True, html=True):
     
-    return get_query_body_rules(pw_rel_dfs['ruleOcc_2'], pw_rel_dfs['ruleOccTrue_2'], pw_rel_dfs['newArc_4'], colored)
+    return get_query_body_rules(pw_rel_dfs['ruleOcc_2'], pw_rel_dfs['ruleOccTrue_2'], pw_rel_dfs['newArc_4'], colored, html)
     
-def print_rewritten_query_string(pw_rel_dfs):
+def print_rewritten_query_string(pw_rel_dfs, html=True, display_q=True, include_ineqls=True):
 
-    heads_htmls = get_substituted_query_heads(pw_rel_dfs, colored=True)
-    rules_htmls = get_substituted_query_body_rules(pw_rel_dfs, colored=True)
+    heads_htmls = get_substituted_query_heads(pw_rel_dfs, colored=True, html=html)
+    rules_htmls = get_substituted_query_body_rules(pw_rel_dfs, colored=True, html=html)
     neqls = neq_rules(pw_rel_dfs)
-    rules_htmls.extend(neqls)
+    if include_ineqls:
+        rules_htmls.extend(neqls)
     
     heads_htmls_combined = ' ; '.join(heads_htmls)
     rules_htmls_combined = ', '.join(rules_htmls)
     
-    display(html_print(cstr('{} :- {}.'.format(heads_htmls_combined, rules_htmls_combined))))
+    q_str = '{} :- {}.'.format(heads_htmls_combined, rules_htmls_combined)
     
+    if html:
+        q_str = cstr(q_str)
+        if display_q:
+            display(html_print(q_str))
+    else:
+        if display_q:
+            print(q_str)
+    return q_str
+        
 
-def print_explicit_rewritten_query_string(pw_rel_dfs, chain_eq=True):
+def print_explicit_rewritten_query_string(pw_rel_dfs, chain_eq=True, include_ineqls=True, include_eqls=True, display_q=True, html=True):
     
-    heads_htmls = get_original_query_heads(pw_rel_dfs, colored=True)
-    rules_htmls = get_original_query_body_rules(pw_rel_dfs, colored=True)
+    heads_htmls = get_original_query_heads(pw_rel_dfs, colored=True, html=html)
+    rules_htmls = get_original_query_body_rules(pw_rel_dfs, colored=True, html=html)
     eqls = chain_eqs_rules(pw_rel_dfs) if chain_eq else eq_rules(pw_rel_dfs)
     neqls = neq_rules(pw_rel_dfs)
-    rules_htmls.extend(eqls)
-    rules_htmls.extend(neqls)
+    if include_eqls:
+        rules_htmls.extend(eqls)
+    if include_ineqls:
+        rules_htmls.extend(neqls)
     
     heads_htmls_combined = ' ; '.join(heads_htmls)
     rules_htmls_combined = ', '.join(rules_htmls)
     
-    display(html_print(cstr('{} :- {}.'.format(heads_htmls_combined, rules_htmls_combined))))
+    q_str = '{} :- {}.'.format(heads_htmls_combined, rules_htmls_combined)
+    if html:
+        q_str = cstr(q_str)
+        if display_q:
+            display(html_print(q_str))
+    else:
+        if display_q:
+            print(q_str)
+    return q_str
     
-def print_fancy_rewrite(pw_rel_dfs):
+def print_fancy_rewrite(pw_rel_dfs, html=True, display_q=True):
     
-    heads_htmls = get_original_query_heads(pw_rel_dfs, colored=True)
-    rules_htmls = get_original_query_body_rules(pw_rel_dfs, colored=True)
+    heads_htmls = get_original_query_heads(pw_rel_dfs, colored=True, html=html)
+    rules_htmls = get_original_query_body_rules(pw_rel_dfs, colored=True, html=html)
     eq_grps = eq_groups(pw_rel_dfs, single_grps=True)
     eqls = ['='.join(map(remove_double_quotes, grp)) for grp in eq_grps]
     eqls = ['[{}]'.format(eq_grp) for eq_grp in eqls]
     
     heads_htmls_combined = ' ; '.join(heads_htmls)
     rules_htmls_combined = ', '.join(rules_htmls)
-    eqls_combined = cstr(''.join(eqls), 'blue')
+    eqls_combined = ''.join(eqls)
+    if html:
+        eqls_combined = cstr(eqls_combined, 'blue')
     
-    display(html_print(cstr('{} :- {}. % {}'.format(heads_htmls_combined, rules_htmls_combined, eqls_combined))))
+    q_str = '{} :- {}. % {}'.format(heads_htmls_combined, rules_htmls_combined, eqls_combined)
+    
+    if html:
+        q_str = cstr(q_str)
+        if display_q:
+            display(html_print(q_str))
+    else:
+        if display_q:
+            print(q_str)
+    return q_str
     
 
 def get_query_heads_dict(pw_obj):
@@ -406,3 +475,9 @@ def get_equivalent_sets(objs, match_func):
         sets.append(curr_set)
         curr_iter_set = next_iter_set
     return sets
+
+def get_eqs_set(pw_rel_dfs, pw_id):
+    eq_df = pw_rel_dfs['eqOrd_3']
+    pw_eq_df = eq_df[eq_df['pw'] == pw_id]
+    pw_eq_df = pw_eq_df[['VAR1', 'VAR2']]
+    return set((r['VAR1'], r['VAR2']) for _,r in pw_eq_df.iterrows())

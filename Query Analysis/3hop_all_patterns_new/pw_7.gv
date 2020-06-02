@@ -1,0 +1,36 @@
+strict digraph G {
+	graph [bb="0,0,225,67",
+		label="thop(X,Y) :- e(X,Y), e(Y,X), e(X,Y).",
+		labelloc=t,
+		lheight=0.21,
+		lp="112.5,55.5",
+		lwidth=2.90,
+		rankdir=LR
+	];
+	node [label="\N"];
+	X	 [color=blue,
+		fontname="Helvetica-Narrow",
+		height=0.61111,
+		pos="45.5,22",
+		shape=doublecircle,
+		style=solid,
+		width=0.61111];
+	Y	 [color=blue,
+		fontname="Helvetica-Narrow",
+		height=0.61111,
+		pos="170.5,22",
+		shape=doubleoctagon,
+		style=solid,
+		width=0.86111];
+	X -> Y	 [color=darkgreen,
+		fontname=helvetica,
+		label="e1;e3",
+		lp="103.5,29.5",
+		pos="e,139.28,22 67.56,22 84.588,22 108.63,22 129.2,22"];
+	Y -> X	 [color=darkgreen,
+		fontname=helvetica,
+		label=e2,
+		lp="103.5,10.5",
+		pos="e,64.812,10.713 143.55,9.5063 136.52,6.8198 128.85,4.3759 121.5,3 105.77,0.057594 101.11,-0.51859 85.5,3 81.755,3.8443 77.949,5.0822 \
+74.248,6.528"];
+}

@@ -1,0 +1,46 @@
+digraph G {
+	graph [bb="0,0,264,96",
+		label="thop(X,Y) :- e(X,Z1), e(Z1,Z1), e(Z1,Y).",
+		labelloc=t,
+		lheight=0.21,
+		lp="132,84.5",
+		lwidth=3.21,
+		rankdir=LR
+	];
+	node [label="\N"];
+	Z1	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		pos="123,22",
+		shape=box,
+		style=rounded,
+		width=0.75];
+	Z1 -> Z1	 [color=darkgreen,
+		fontname=helvetica,
+		label=e2,
+		lp="123,65.5",
+		pos="e,132.41,40.153 113.59,40.153 112.15,49.539 115.28,58 123,58 127.7,58 130.71,54.858 132.01,50.28"];
+	Y	 [color=blue,
+		fontname="Helvetica-Narrow",
+		height=0.61111,
+		pos="233,22",
+		shape=doubleoctagon,
+		style=solid,
+		width=0.86111];
+	Z1 -> Y	 [color=darkgreen,
+		fontname=helvetica,
+		label=e3,
+		lp="176,29.5",
+		pos="e,201.84,22 150.19,22 162.66,22 177.72,22 191.56,22"];
+	X	 [color=blue,
+		fontname="Helvetica-Narrow",
+		height=0.61111,
+		pos="22,22",
+		shape=doublecircle,
+		style=solid,
+		width=0.61111];
+	X -> Z1	 [color=darkgreen,
+		fontname=helvetica,
+		label=e1,
+		lp="70,29.5",
+		pos="e,95.979,22 44.415,22 56.549,22 71.854,22 85.727,22"];
+}

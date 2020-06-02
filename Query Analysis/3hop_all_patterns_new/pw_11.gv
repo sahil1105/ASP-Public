@@ -1,0 +1,46 @@
+strict digraph G {
+	graph [bb="0,0,274,102",
+		label="thop(X,X) :- e(X,Z1), e(Z1,Z2), e(Z2,X).",
+		labelloc=t,
+		lheight=0.21,
+		lp="137,90.5",
+		lwidth=3.21,
+		rankdir=LR
+	];
+	node [label="\N"];
+	Z2	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		pos="27,18",
+		shape=box,
+		style=rounded,
+		width=0.75];
+	X	 [color=blue,
+		fontname="Helvetica-Narrow",
+		height=0.61111,
+		pos="137,57",
+		shape=doubleoctagon,
+		style=rounded,
+		width=0.86111];
+	Z2 -> X	 [color=darkgreen,
+		fontname=helvetica,
+		label=e3,
+		lp="80,45.5",
+		pos="e,107.03,46.374 54.191,27.64 67.217,32.259 83.068,37.879 97.401,42.96"];
+	Z1	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		pos="247,18",
+		shape=box,
+		style=rounded,
+		width=0.75];
+	X -> Z1	 [color=darkgreen,
+		fontname=helvetica,
+		label=e1,
+		lp="194,45.5",
+		pos="e,219.85,27.627 166.77,46.446 180.21,41.681 196.22,36.005 210.39,30.982"];
+	Z1 -> Z2	 [color=darkgreen,
+		fontname=helvetica,
+		label=e2,
+		lp="137,18.5",
+		pos="e,54.017,15.011 219.98,15.011 204.74,13.474 185.33,11.766 168,11 140.47,9.7828 133.53,9.7828 106,11 92.324,11.605 77.355,12.796 \
+64.16,14.026"];
+}
