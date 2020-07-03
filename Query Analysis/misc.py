@@ -291,6 +291,7 @@ def get_query_heads(ruleH_dfs, ruleHTrue_dfs, hArc_df, colored=True, html=True):
         variables = [remove_double_quotes(heads[h][k]) for k in sorted(heads[h].keys())]
         is_true = h in true_heads
         h_str = '{}{}({})'.format('' if is_true else 'n', head_to_node(h), ','.join(variables))
+        h_str = '{}{}{}'.format('' if is_true else 'n', head_to_node(h), '({})'.format(','.join(variables)) if len(variables) > 0 else '')
         if html:
             if colored:
                 heads_htmls.append(cstr(h_str, 'green' if is_true else 'red'))
@@ -423,9 +424,10 @@ def print_fancy_rewrite(pw_rel_dfs, html=True, display_q=True):
 def get_query_heads_dict(pw_obj):
     heads = {h: {} for h in set([t[0] for t in pw_obj.rls['ruleH_1']])}
     true_heads = set([t[0] for t in pw_obj.rls['ruleHTrue_1']])
-    for row in pw_obj.rls['newHArc_3']:
-        pos, h, var = int(row[1]), row[2], row[0]
-        heads[h][pos] = var
+    if 'newHArc_3' in pw_obj.rls:
+        for row in pw_obj.rls['newHArc_3']:
+            pos, h, var = int(row[1]), row[2], row[0]
+            heads[h][pos] = var
     return heads, true_heads
     
 def get_query_head_facts(pw_obj, idx=None):
@@ -434,7 +436,7 @@ def get_query_head_facts(pw_obj, idx=None):
     for h in sorted(heads.keys()):
         variables = [(heads[h][k]) for k in sorted(heads[h].keys())]
         is_true = h in true_heads
-        h_str = '{}{}{}({}).'.format('' if is_true else 'n', head_to_node(h), '' if idx is None else str(idx), ','.join(variables))
+        h_str = '{}{}{}{}.'.format('' if is_true else 'n', head_to_node(h), '' if idx is None else str(idx), '({})'.format(','.join(variables)) if len(variables) > 0 else '')
         head_strs.append(h_str)
     return head_strs
 
@@ -451,9 +453,9 @@ def are_equivalent_patterns(pw1, pw2, eq_check_encoding):
     pw2_edge_facts = get_edge_facts(pw2, 2)
     pw1_head_facts = get_query_head_facts(pw1, idx=1)
     pw2_head_facts = get_query_head_facts(pw2, idx=2)
-    # print(pw1_edge_facts, pw2_edge_facts, pw1_head_facts, pw2_head_facts)
+    #print(pw1_edge_facts, pw2_edge_facts, pw1_head_facts, pw2_head_facts)
     asp_out, _ = run_clingo(eq_check_encoding.split('\n')+pw1_edge_facts+pw2_edge_facts+pw1_head_facts+pw2_head_facts, num_solutions=1)
-    # print(asp_out)
+    #print(asp_out)
     _,_,eq_check_pws = load_worlds(asp_out, silent=True)
     
     return len(eq_check_pws) >= 1
@@ -481,3 +483,10 @@ def get_eqs_set(pw_rel_dfs, pw_id):
     pw_eq_df = eq_df[eq_df['pw'] == pw_id]
     pw_eq_df = pw_eq_df[['VAR1', 'VAR2']]
     return set((r['VAR1'], r['VAR2']) for _,r in pw_eq_df.iterrows())
+
+
+from itertools import chain, combinations
+def powerset(iterable):
+    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+    s = list(iterable)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))

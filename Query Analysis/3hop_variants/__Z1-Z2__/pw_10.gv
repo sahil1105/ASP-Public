@@ -1,0 +1,48 @@
+digraph G {
+	graph [bb="0,0,207,164",
+		label="q(X,X) :- e(X,X), e(X,X), e(X,Y).",
+		labelloc=t,
+		lheight=0.21,
+		lp="103.5,152.5",
+		lwidth=2.65,
+		rankdir=LR
+	];
+	node [label="\N"];
+	X	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		label="X=Z1=Z2",
+		pos="50.5,90",
+		shape=box,
+		style=rounded,
+		width=1.0417];
+	X -> X	 [color=darkgreen,
+		fontname=helvetica,
+		label="e1;e2",
+		lp="50.5,133.5",
+		pos="e,61.716,108.15 39.284,108.15 37.558,117.54 41.297,126 50.5,126 56.108,126 59.687,122.86 61.237,118.28"];
+	Y	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		pos="167,90",
+		shape=box,
+		style=rounded,
+		width=0.75];
+	X -> Y	 [color=darkgreen,
+		fontname=helvetica,
+		label=e3,
+		lp="114,97.5",
+		pos="e,139.91,90 88.003,90 101.33,90 116.33,90 129.65,90"];
+	thop	 [color=skyblue,
+		fillcolor=skyblue,
+		fontname=helvetica,
+		height=0.5,
+		pos="50.5,18",
+		shape=oval,
+		style="filled,rounded",
+		width=0.79437];
+	thop -> X	 [color=blue,
+		constraint=false,
+		label="1;2",
+		lp="40,54",
+		pos="e,50.5,71.587 50.5,36.169 50.5,43.869 50.5,53.026 50.5,61.583",
+		style=dotted];
+}

@@ -1,0 +1,50 @@
+strict digraph G {
+	graph [bb="0,0,207,131",
+		label="q(X,X) :- e(X,Y), e(Y,X), e(X,Y).",
+		labelloc=t,
+		lheight=0.21,
+		lp="103.5,119.5",
+		lwidth=2.65,
+		rankdir=LR
+	];
+	node [label="\N"];
+	X	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		label="X=Z2",
+		pos="40.5,90",
+		shape=box,
+		style=rounded,
+		width=0.75];
+	Y	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		label="Y=Z1",
+		pos="168.1,90",
+		shape=box,
+		style=rounded,
+		width=0.75];
+	X -> Y	 [color=darkgreen,
+		fontname=helvetica,
+		label="e1;e3",
+		lp="105.1,97.5",
+		pos="e,141.08,90 67.56,90 86,90 110.65,90 130.93,90"];
+	Y -> X	 [color=darkgreen,
+		fontname=helvetica,
+		label=e2,
+		lp="105.1,78.5",
+		pos="e,67.552,76.924 141.05,76.541 135.26,74.245 129.08,72.212 123.1,71 107.42,67.825 102.8,67.922 87.097,71 83.84,71.639 80.522,72.506 \
+77.235,73.521"];
+	thop	 [color=skyblue,
+		fillcolor=skyblue,
+		fontname=helvetica,
+		height=0.5,
+		pos="40.5,18",
+		shape=oval,
+		style="filled,rounded",
+		width=0.79437];
+	thop -> X	 [color=blue,
+		constraint=false,
+		label="1;2",
+		lp="30,54",
+		pos="e,40.5,71.587 40.5,36.169 40.5,43.869 40.5,53.026 40.5,61.583",
+		style=dotted];
+}

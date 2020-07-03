@@ -1,0 +1,49 @@
+strict digraph G {
+	graph [bb="0,0,194,129",
+		label="q(Y) :- e(X,Y), e(Y,X), e(X,Y).",
+		labelloc=t,
+		lheight=0.21,
+		lp="97,117.5",
+		lwidth=2.47,
+		rankdir=LR
+	];
+	node [label="\N"];
+	X	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		label="X=Z2",
+		pos="34,77",
+		shape=box,
+		style=rounded,
+		width=0.75];
+	Y	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		label="Y=Z1",
+		pos="161.6,88",
+		shape=box,
+		style=rounded,
+		width=0.75];
+	X -> Y	 [color=darkgreen,
+		fontname=helvetica,
+		label="e1;e3",
+		lp="98.597,94.5",
+		pos="e,134.53,87.896 61.02,82.265 67.416,83.337 74.229,84.338 80.597,85 94.874,86.483 110.63,87.261 124.43,87.66"];
+	Y -> X	 [color=darkgreen,
+		fontname=helvetica,
+		label=e2,
+		lp="98.597,73.5",
+		pos="e,61.015,68.548 134.24,72.208 128.58,69.639 122.53,67.372 116.6,66 101.85,62.589 85.367,63.802 71.025,66.43"];
+	thop	 [color=skyblue,
+		fillcolor=skyblue,
+		fontname=helvetica,
+		height=0.5,
+		pos="34,18",
+		shape=oval,
+		style="filled,rounded",
+		width=0.79437];
+	thop -> Y	 [color=blue,
+		constraint=false,
+		label=1,
+		lp="98.597,51.5",
+		pos="e,146.52,69.644 61.38,23.215 78.144,27.211 99.572,33.805 116.6,44 124.86,48.947 132.76,55.702 139.58,62.434",
+		style=dotted];
+}

@@ -1,0 +1,60 @@
+digraph G {
+	graph [bb="0,0,254,165",
+		label="q(X,Z1,Z1) :- e(X,Z1), e(Z1,Z1), e(Z1,X).",
+		labelloc=t,
+		lheight=0.21,
+		lp="127,153.5",
+		lwidth=3.31,
+		rankdir=LR
+	];
+	node [label="\N"];
+	Z1	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		label="Z1=Z2",
+		pos="74,91",
+		shape=box,
+		style=rounded,
+		width=0.79167];
+	Z1 -> Z1	 [color=darkgreen,
+		fontname=helvetica,
+		label=e2,
+		lp="74,134.5",
+		pos="e,83.769,109.15 64.231,109.15 62.728,118.54 65.984,127 74,127 78.885,127 82.002,123.86 83.352,119.28"];
+	X	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		label="X=Y",
+		pos="181.6,100",
+		shape=box,
+		style=rounded,
+		width=0.75];
+	Z1 -> X	 [color=darkgreen,
+		fontname=helvetica,
+		label=e3,
+		lp="128.6,105.5",
+		pos="e,154.54,99.128 102.55,95.038 108.5,95.778 114.75,96.48 120.6,97 128.31,97.685 136.58,98.223 144.47,98.643"];
+	X -> Z1	 [color=darkgreen,
+		fontname=helvetica,
+		label=e1,
+		lp="128.6,85.5",
+		pos="e,102.73,79.776 154.24,84.208 148.58,81.639 142.53,79.372 136.6,78 128.84,76.206 120.52,76.437 112.55,77.7"];
+	thop	 [color=skyblue,
+		fillcolor=skyblue,
+		fontname=helvetica,
+		height=0.5,
+		pos="74,18",
+		shape=oval,
+		style="filled,rounded",
+		width=0.79437];
+	thop -> Z1	 [color=blue,
+		constraint=false,
+		label="2;3",
+		lp="63.5,54.5",
+		pos="e,74,72.91 74,36.045 74,44.117 74,53.824 74,62.818",
+		style=dotted];
+	thop -> X	 [color=blue,
+		constraint=false,
+		label=1,
+		lp="128.6,64.5",
+		pos="e,164.4,81.958 95.588,29.964 108,37.202 123.65,46.952 136.6,57 143.59,62.428 150.72,68.786 157.18,74.924",
+		style=dotted];
+}

@@ -1,0 +1,53 @@
+digraph G {
+	graph [bb="0,0,272.19,113",
+		label="q :- e(X,Z1), e(Z1,Z1), e(Z1,Y).",
+		labelloc=t,
+		lheight=0.21,
+		lp="136.1,101.5",
+		lwidth=2.50,
+		rankdir=LR
+	];
+	node [label="\N"];
+	Z1	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		label="Z1=Z2",
+		pos="137.69,18",
+		shape=box,
+		style=rounded,
+		width=0.79167];
+	Z1 -> Z1	 [color=darkgreen,
+		fontname=helvetica,
+		label=e2,
+		lp="137.69,61.5",
+		pos="e,147.46,36.153 127.93,36.153 126.42,45.539 129.68,54 137.69,54 142.58,54 145.7,50.858 147.05,46.28"];
+	Y	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		pos="245.19,18",
+		shape=box,
+		style=rounded,
+		width=0.75];
+	Z1 -> Y	 [color=darkgreen,
+		fontname=helvetica,
+		label=e3,
+		lp="192.19,25.5",
+		pos="e,218.02,18 166.22,18 179.01,18 194.26,18 207.94,18"];
+	X	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		pos="28.597,18",
+		shape=box,
+		style=rounded,
+		width=0.75];
+	X -> Z1	 [color=darkgreen,
+		fontname=helvetica,
+		label=e1,
+		lp="83.195,25.5",
+		pos="e,108.89,18 55.846,18 68.847,18 84.636,18 98.865,18"];
+	thop	 [color=skyblue,
+		fillcolor=skyblue,
+		fontname=helvetica,
+		height=0.5,
+		pos="28.597,72",
+		shape=oval,
+		style="filled,rounded",
+		width=0.79437];
+}

@@ -1,0 +1,54 @@
+digraph G {
+	graph [bb="0,0,207,164",
+		label="q(X,Y) :- e(X,Y), e(Y,Y), e(Y,Y).",
+		labelloc=t,
+		lheight=0.21,
+		lp="103.5,152.5",
+		lwidth=2.65,
+		rankdir=LR
+	];
+	node [label="\N"];
+	X	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		pos="40,90",
+		shape=box,
+		style=rounded,
+		width=0.75];
+	Y	 [fontname="Helvetica-Narrow",
+		height=0.5,
+		label="Y=Z1=Z2",
+		pos="158.1,90",
+		shape=box,
+		style=rounded,
+		width=1.0417];
+	X -> Y	 [color=darkgreen,
+		fontname=helvetica,
+		label=e1,
+		lp="94.597,97.5",
+		pos="e,120.39,90 67.094,90 79.931,90 95.65,90 110.39,90"];
+	Y -> Y	 [color=darkgreen,
+		fontname=helvetica,
+		label="e2;e3",
+		lp="158.1,133.5",
+		pos="e,169.31,108.15 146.88,108.15 145.16,117.54 148.89,126 158.1,126 163.71,126 167.28,122.86 168.83,118.28"];
+	thop	 [color=skyblue,
+		fillcolor=skyblue,
+		fontname=helvetica,
+		height=0.5,
+		pos="40,18",
+		shape=oval,
+		style="filled,rounded",
+		width=0.79437];
+	thop -> X	 [color=blue,
+		constraint=false,
+		label=1,
+		lp="29.5,54",
+		pos="e,40,71.587 40,36.169 40,43.869 40,53.026 40,61.583",
+		style=dotted];
+	thop -> Y	 [color=blue,
+		constraint=false,
+		label=2,
+		lp="94.597,63.5",
+		pos="e,128.47,71.936 60.571,30.541 76.847,40.464 100.03,54.598 119.71,66.596",
+		style=dotted];
+}
